@@ -22,6 +22,7 @@
 """
 
 from googlevoice import Voice
+from time import sleep
 
 """
 Wrapper for the Google Voice client
@@ -37,8 +38,9 @@ class GVWrapper:
 		self.voice.login( user, passwd )
 		self.logged_in = True
 
-
 	def SendAlert( self, text, receipients ):
-		for each_number in receipients:
-			self.voice.send_sms( each_number, text )
+		if self.logged_in:
+			for each_number in receipients:
+				self.voice.send_sms( each_number, text )
+				sleep(5)
 
