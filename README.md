@@ -16,3 +16,5 @@ Potential Issues
 ----------------
 
 Sometimes devices can fall off the ARP table, especially if they are not talking for a period of time. Probably need to figure out a way to have the router ping the broadcast IP just before the cronjob runs for this process. You could schedule the cron between a certain time period where you expect the device to show up to shorten the probability that a device will be undetected due to an ARP timeout.
+
+Increasing the threshold in tracker.cfg will help alleviate this, but will throw off the speed at which you will receive your alerts. In my setup, I poll every minute, and send an alert once a device appears active after 5 polls.

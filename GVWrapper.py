@@ -35,12 +35,15 @@ class GVWrapper:
 		self.voice = Voice()
 
 	def login( self, user, passwd ):
-		self.voice.login( user, passwd )
-		self.logged_in = True
+		try:
+			self.voice.login( user, passwd )
+			self.logged_in = True
+		except:
+			self.logged_in = False
 
-	def SendAlert( self, text, receipients ):
-		if self.logged_in:
-			for each_number in receipients:
-				self.voice.send_sms( each_number, text )
-				sleep(5)
+
+	def SendAlert( self, text, number ):
+		if logged_in:
+			self.voice.send_sms( str(number), text )
+			sleep(5)
 

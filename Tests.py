@@ -50,5 +50,5 @@ class Tests:
 			h = HttpReader( config.router_page, config.router_auth )			
 			print " Ok."
 			print type(config.device_ids)
-			h.FindInARPTable( config.device_ids[0] )
+			#h.FindInARPTable( )
 

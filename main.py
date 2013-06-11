@@ -62,23 +62,39 @@ page = HttpReader( config.router_page, config.router_auth )
 # now find the new state of each device in the list
 for each in range( len(config.device_ids) ):
 	
+	# grab information from the device from the configuration file
 	last_state = config.device_status[each]
-	new_state = page.FindInARPTable( config.device_ids[each] )
+	is_present = config.device_present[each]
+	device_name = config.device_names[each]
 	
-	# if there is a change in state
-	if( new_state != last_state ):
-		change = " left "
-		if new_state == True:
-			change = " joined "
+	# search the page for the device	
+	new_state = page.FindInARPTable( config.device_ids[each] )
 
-		# Make the state change
-		config.device_status[each] = new_state
+	# if the device is online, and the device's last state is not
+	# larger than the alert threshold, increment the ping counter
+	if( new_state == True and last_state < config.threshold ):				
+		config.device_status[each] += 1
+		logger.Log(device_name + " has pinged on the network. State: " + str( config.device_status[each] ) )
+	
+	# but if the device is not online, and the last state is
+	elif( new_state == False and last_state > 0 ):
+		config.device_status[each] -= 1	
+		logger.Log(device_name + " dropped a ping on the network. State: " + str( config.device_status[each] ) )
 
-		# Append to the text message
-		message += config.device_names[each] + " has" + change + "the wireless network. "
-		logger.Log(" STATE CHANGE: " + message)
-	else:
-		logger.Log( config.device_names[each] + " State: " + str( config.device_status[each] ) )
+
+	# determine if we need to send a message
+	if( new_state == True and config.device_status[each] >= config.threshold and is_present == False ):
+		message += device_name + " has joined the wireless network. "
+		config.device_present[each] = True
+		logger.Log("STATE CHANGE: " + message)
+
+	elif( new_state == False and config.device_status[each] <= 0 and is_present == True ):
+		message += device_name + " has left the wireless network. "
+		config.device_present[each] = False
+		logger.Log("STATE CHANGE: " + message)
+
+	# Append to the text message
+	logger.Log( config.device_names[each] + " State: " + str( config.device_status[each] ) + " Present: " + str( config.device_present[each] ) )
 
 # Write the config file
 config.WriteConfig()
@@ -88,6 +104,7 @@ if message:
 	gvoice.login( config.gvuser, config.gvpass )
 	logger.Log("Sent text message to " + str( config.notify ) )
 	if len( config.notify ) > 0:
-		gvoice.SendAlert( message, config.notify )
+		for number in config.notify:
+			gvoice.SendAlert( number, message )
 
 
