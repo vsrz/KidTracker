@@ -94,7 +94,8 @@ for each in range( len(config.device_ids) ):
 		logger.Log("STATE CHANGE: " + message)
 
 	# Append to the text message
-	logger.Log( config.device_names[each] + " State: " + str( config.device_status[each] ) + " Present: " + str( config.device_present[each] ) )
+	# Uncomment below if you want to make a log entry for each poll
+	# logger.Log( config.device_names[each] + " State: " + str( config.device_status[each] ) + " Present: " + str( config.device_present[each] ) )
 
 # Write the config file
 config.WriteConfig()

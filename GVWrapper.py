@@ -45,5 +45,4 @@ class GVWrapper:
 	def SendAlert( self, number, message ):
 		if self.logged_in:
 			self.voice.send_sms( str(number), message )
-			sleep(5)
 
